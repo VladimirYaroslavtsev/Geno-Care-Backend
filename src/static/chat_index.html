@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/react@latest/umd/react.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@latest/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@mui/material@latest/umd/material-ui.development.js"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@babel/standalone@latest/babel.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <title>WebSocket Chat</title>
+</head>
+<body>
+    <!-- size="100" -->
+    <input type="text" id="messageInput" placeholder="Type a message..." style='width: 700px; height: 100px'>
+    <button onclick="sendMessage()">Send</button>
+    <ul id="chatMessages"></ul>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8000/wc_research");
+
+        socket.onmessage = function(event) {
+            const chatMessages = document.getElementById("chatMessages");
+            const message = document.createElement("li");
+            message.textContent = event.data;
+            chatMessages.appendChild(message);
+        };
+
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value;
+            socket.send(message);
+            messageInput.value = "";
+        }
+    </script>
+</body>
+</html>

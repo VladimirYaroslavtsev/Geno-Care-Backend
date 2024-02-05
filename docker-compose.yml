@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  fastapi-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env.dev
+    ports:
+      - "8000:8000"  # Map port 80 in the container to port 8000 on the host
+    depends_on:
+      - neo4j-db  # Ensure the Neo4j container is started first
+
+  neo4j-db:
+    image: neo4j:latest
+    env_file:
+      - .env.dev
+    # environment:
+    #   NEO4J_AUTH: neo4j/password  # Set your desired username and password
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
