@@ -20,10 +20,12 @@
     <!-- size="100" -->
     <input type="text" id="messageInput" placeholder="Type a message..." style='width: 700px; height: 100px'>
     <button onclick="sendMessage()">Send</button>
+    <p>Have any of your immediate family members, like parents or siblings, been diagnosed with any chronic diseases or conditions?
+    </p>
     <ul id="chatMessages"></ul>
 
     <script>
-        const socket = new WebSocket("ws://localhost:8000/wc_research");
+        const socket = new WebSocket("ws://localhost:8000/v1/wc_research");
 
         socket.onmessage = function(event) {
             const chatMessages = document.getElementById("chatMessages");

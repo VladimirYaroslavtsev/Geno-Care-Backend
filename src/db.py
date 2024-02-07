@@ -1,5 +1,6 @@
+from fastapi.exceptions import HTTPException
 from neo4j import GraphDatabase
-
+import models
 
 class Neo4jCRUD:
 
@@ -14,9 +15,21 @@ class Neo4jCRUD:
             self._driver.close()
 
     def connect(self):
+        print(self._uri)
         self._driver = GraphDatabase.driver(self._uri, auth=(self._user, self._password))
 
-    def create_node(self, label, **properties):
+    def test_query(self):
+        try:
+            query = 'Match () Return 1 Limit 1'
+            with self._driver.session() as session:
+                session.run(query)
+                print('Works')
+        except Exception as err:
+            print(err)
+            print('Doesnt work')
+
+    def create_node(self, label: str, **properties):
+        print(properties)
         with self._driver.session() as session:
             result = session.write_transaction(self._create_node, label, properties)
             return result
@@ -36,6 +49,40 @@ class Neo4jCRUD:
     def _read_node(self, tx, node_id):
         query = "MATCH (node) WHERE id(node) = $node_id RETURN node"
         return tx.run(query, node_id=node_id).single()
+
+    def find_node_by_properties(self, label, properties):
+        with self._driver.session() as session:
+            result = session.read_transaction(self._find_node_by_properties, label, properties)
+            return result
+
+    @staticmethod
+    def _find_node_by_properties(tx, label, properties):
+        query = (
+            f"MATCH (node:{label}) "
+            "WHERE "
+        )
+        for key, value in properties.items():
+            query += f"node.{key} = ${key} AND "
+        query = query[:-5]  # Remove the last 'AND'
+        query += "RETURN node"
+        return tx.run(query, **properties).single()
+
+    def get_family_tree(self, person_name: str):
+        with self._driver.session() as session:
+            result = session.run(
+                """
+                MATCH (p:Person {name: $name})-[:PARENT_OF]->(child)
+                RETURN p.name AS parent_name, collect(child.name) AS children
+                """,
+                name=person_name
+            )
+            record = result.single()
+            if record:
+                parent = models.Person(name=record['parent_name'], gender='unknown')  # You may adjust this based on your data model
+                children = [models.Person(name=name, gender='unknown') for name in record['children']]
+                return models.FamilyTree(root=parent, children=children)
+            else:
+                raise HTTPException(status_code=404, detail="Person not found")
 
     def update_node(self, node_id, **properties):
         with self._driver.session() as session:
