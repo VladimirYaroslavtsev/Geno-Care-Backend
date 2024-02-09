@@ -19,21 +19,24 @@ RESEARCH_SYSTEM_MESSAGE = f'''
     by asking them questions like: \
     - in what age these conditions were diagnosed. \
     - if where any other conditions. \
+    - the current age. \
+    - name. \
     - if where any other relatives and their conditions to share. \
 
-    Don't ask the user anout their health issues and age. \
+    Don't ask the user about their health issues and age. \
     if the user doesn't have anything else to add - finish the conversation. \
 
-    Generate your replys as json with the following structure: \
-    main object with keys: family, reply. \
+    After the conversation is finished and the user provide all the information they have \
+    return a summary of the given information and ask if it's correct, and create a json with the following structure: \
+    main object with key: family. separate the json with a new line and # in it. \
+    Don't mention for the user that you are creating the json. \
     In the family key put a list with separate objects for each family member \
     that user provided. The keys for these objects are: name, family status, age, \
     mediacal_conditions. \
-    In the reply key put your reply as a string. \
     Example of this structure: \
-    {{"family": [{{"name": "John", "age": 54, "family_status": "father", "medical_conditions": "High blood pressure"}}, \
-    {{"name": "Anna", "age": 55, "family_status": "mother", "medical_conditions": "diabetes"}}], \
-    "reply": "here put your reply to the user"}}.
+    {{"family": [{{"name": "John", "age": 54, "family_status": "father", \
+    "medical_conditions": ["High blood pressure. Diagnosed at 20.", "Diabetes. Diagnosed at 40."]}}, \
+    {{"name": "Anna", "age": 55, "family_status": "mother", "medical_conditions": "diabetes. Diagnosed at 45"}}]}}.
     '''
 
 RECOMMENDATION_SYSTEM_MESSAGE = '''
@@ -42,7 +45,6 @@ RECOMMENDATION_SYSTEM_MESSAGE = '''
     and also give specific health recommendation based on provided \
     relatives information: age, chronic diseases and conditions. \
     
-     
 '''
 
 START_MESSAGE = 'Have any of your immediate \

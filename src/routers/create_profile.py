@@ -11,7 +11,10 @@ router = APIRouter(tags=['create_profile'])
 
 
 @router.post('/create_profile')
-async def create_profile(profile: models.Profile, tree_db: db.Neo4jCRUD = Depends(dependency.get_database_connection)):
+async def create_profile(
+    profile: models.Profile,
+    tree_db: db.Neo4jCRUD = Depends(dependency.get_database_connection)
+):
     status_code = 201
     result = 'The profile successfuly created'
     try:

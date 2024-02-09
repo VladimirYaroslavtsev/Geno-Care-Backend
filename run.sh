@@ -2,14 +2,15 @@
 
 # Run neo4j database
 # -p7687:7687
+CURR_PATH=$(pwd)
 docker run \
     --name neo4j \
-    -p7474:7474  \
+    -p7474:7474 -p7687:7687 \
     -d \
-    -v $HOME/neo4j/data:/data \
-    -v $HOME/neo4j/logs:/logs \
-    -v $HOME/neo4j/import:/var/lib/neo4j/import \
-    -v $HOME/neo4j/plugins:/plugins \
+    -v $CURR_PATH/neo4j/data:/data \
+    -v $CURR_PATH/neo4j/logs:/logs \
+    -v $CURR_PATH/neo4j/import:/var/lib/neo4j/import \
+    -v $CURR_PATH/neo4j/plugins:/plugins \
     --env NEO4J_AUTH=neo4j/password \
     --env NEO4J_server_https_advertised__address="localhost:7473" \
 	--env NEO4J_server_http_advertised__address="localhost:7474" \
@@ -18,6 +19,7 @@ docker run \
 
 sleep 5
 
+# Grub the neo4j IP address
 # echo "NEO4J_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' neo4j)" >> .env.dev
 # sed -i '' 's/^URI=.*/URI='"$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' neo4j)"'/' .env
 NEO4J_IP=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' neo4j)

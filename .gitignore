@@ -7,7 +7,9 @@ env
 
 .env
 .env.dev
+
 .compose
 data/
+neo4j/
 
 conversation.txt

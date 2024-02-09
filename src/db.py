@@ -2,6 +2,7 @@ from fastapi.exceptions import HTTPException
 from neo4j import GraphDatabase
 import models
 
+
 class Neo4jCRUD:
 
     def __init__(self, uri, user, password):
@@ -66,6 +67,38 @@ class Neo4jCRUD:
         query = query[:-5]  # Remove the last 'AND'
         query += "RETURN node"
         return tx.run(query, **properties).single()
+
+    def create_person(self, name, age, gender):
+        with self._driver.session() as session:
+            result = session.write_transaction(self._create_person, name, age, gender)
+            return result
+
+    @staticmethod
+    def _create_person(tx, name, age, gender):
+        query = (
+            "CREATE (p:Person {name: $name, age: $age, gender: $gender}) "
+            "RETURN p"
+        )
+        return tx.run(query, name=name, age=age, gender=gender).single()
+
+    def create_family_member(self, properties):
+        with self._driver.session() as session:
+            result = session.write_transaction(self._create_family_member, properties)
+            return result
+
+    @staticmethod
+    def _create_family_member(tx, name, age, parent_name):
+        query = (
+            "CREATE (p:Person {name: $name, age: $age}) "
+        )
+        if parent_name:
+            query += (
+                "WITH p "
+                "MATCH (parent:Person {name: $parent_name}) "
+                "CREATE (parent)-[:HAS_CHILD]->(p) "
+            )
+        query += "RETURN p"
+        return tx.run(query, name=name, age=age, parent_name=parent_name).single()
 
     def get_family_tree(self, person_name: str):
         with self._driver.session() as session:
