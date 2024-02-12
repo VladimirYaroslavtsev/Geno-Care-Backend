@@ -1,3 +1,4 @@
+from fastapi import HTTPException, Request
 import db
 import settings as st
 
@@ -10,3 +11,10 @@ def get_database_connection():
     tree_db.connect()
     tree_db.test_query()
     return tree_db
+
+
+async def get_node_id_cookie(request: Request):
+    node_id_cookie = request.cookies.get('node_id')
+    if node_id_cookie is None:
+        raise HTTPException(status_code=401, detail='Cookie not found')
+    return node_id_cookie

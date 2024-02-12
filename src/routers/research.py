@@ -12,7 +12,13 @@ router = APIRouter(tags=['research'])
 
 
 @router.websocket('/v1/wc_research')
-async def ws_endp(websocket: WebSocket, tree_db: db.Neo4jCRUD = Depends(dependency.get_database_connection)) -> None:
+async def ws_endp(
+    websocket: WebSocket,
+    # request: Request,
+    # node_id_cookie: int = Depends(dependency.get_node_id_cookie),
+    tree_db: db.Neo4jCRUD = Depends(dependency.get_database_connection)
+) -> None:
+    # print(request)
     try:
         await websocket.accept()
         messages = []
@@ -51,5 +57,5 @@ async def ws_endp(websocket: WebSocket, tree_db: db.Neo4jCRUD = Depends(dependen
         if family_json:
             print('Adding/updating family members')
             for family_member in family_json['family']:
-                pass
-                # await tree_db.create_person(family_member['name'], family_member)
+                # pass
+                tree_db.create_family_member(node_id=0, family_member_data=family_member)

@@ -17,7 +17,7 @@ docker run \
 	--env NEO4J_server_bolt_advertised__address="localhost:7687" \
     neo4j:latest
 
-sleep 5
+sleep 2
 
 # Grub the neo4j IP address
 # echo "NEO4J_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' neo4j)" >> .env.dev
