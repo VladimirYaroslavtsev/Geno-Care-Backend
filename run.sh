@@ -33,7 +33,7 @@ fi
 # Run the backend app
 docker build -t health_app_image .
 docker run \
-    --name health_app \
+    --name health_app_backend \
     -d \
     -p8000:8000 \
     --env-file .env.dev \
