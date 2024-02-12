@@ -16,7 +16,7 @@ async def ws_endp(websocket: WebSocket, tree_db: db.Neo4jCRUD = Depends(dependen
     try:
         await websocket.accept()
         messages = []
-
+        family_json = None
         while True:
             # await websocket.send_text(st.START_MESSAGE)
             message = await websocket.receive_text()
@@ -32,13 +32,9 @@ async def ws_endp(websocket: WebSocket, tree_db: db.Neo4jCRUD = Depends(dependen
             else:
                 messages = ut.get_messages(message, st.RESEARCH_SYSTEM_MESSAGE)
 
-            print('*****************')
-            # print(messages)
-            print('*****************')
             async for text in ut.generate_description(messages):
                 if 'summary' in text or len(text.split('#')) == 2:
                     print(text)
-                    print('THE SUMMARY is here!')
                     summary = text.split('#')
                     text = summary[0]
                     json_summary = summary[-1].replace('\n', '').replace('\r', '').replace('\t', '')
@@ -46,11 +42,14 @@ async def ws_endp(websocket: WebSocket, tree_db: db.Neo4jCRUD = Depends(dependen
                     family_json = json.loads(json_summary)
                     print(family_json)
 
-                    for family_member in family_json:
-                        await tree_db.create_node(family_member['name'], family_member)
-
                 messages.append({'role': 'assistant', 'content': text})
                 await websocket.send_text(text)
     except WebSocketDisconnect as err:
         print(err)
         print('disconnecting...')
+    finally:
+        if family_json:
+            print('Adding/updating family members')
+            for family_member in family_json['family']:
+                pass
+                # await tree_db.create_person(family_member['name'], family_member)

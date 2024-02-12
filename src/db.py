@@ -68,37 +68,51 @@ class Neo4jCRUD:
         query += "RETURN node"
         return tx.run(query, **properties).single()
 
-    def create_person(self, name, age, gender):
+    def create_person(self, **properties):
         with self._driver.session() as session:
-            result = session.write_transaction(self._create_person, name, age, gender)
+            result = session.write_transaction(self._create_person, properties)
             return result
 
     @staticmethod
-    def _create_person(tx, name, age, gender):
+    def _create_person(tx, properties):
         query = (
-            "CREATE (p:Person {name: $name, age: $age, gender: $gender}) "
+            "CREATE (p:Person $properties) "
             "RETURN p"
         )
-        return tx.run(query, name=name, age=age, gender=gender).single()
+        return tx.run(query, properties).single()
 
-    def create_family_member(self, properties):
+    # def create_family_member(self, properties):
+    #     with self._driver.session() as session:
+    #         result = session.write_transaction(self._create_family_member, properties)
+    #         return result
+
+    def create_relationship(self, from_name, to_name, relationship_type):
         with self._driver.session() as session:
-            result = session.write_transaction(self._create_family_member, properties)
+            result = session.write_transaction(self._create_relationship, from_name, to_name, relationship_type)
             return result
 
     @staticmethod
-    def _create_family_member(tx, name, age, parent_name):
+    def _create_relationship(tx, from_name, to_name, relationship_type):
         query = (
-            "CREATE (p:Person {name: $name, age: $age}) "
+            "MATCH (from:Person {name: $from_name}) "
+            "MATCH (to:Person {name: $to_name}) "
+            "CREATE (from)-[:RELATIONSHIP_TYPE]->(to) "
         )
-        if parent_name:
-            query += (
-                "WITH p "
-                "MATCH (parent:Person {name: $parent_name}) "
-                "CREATE (parent)-[:HAS_CHILD]->(p) "
-            )
-        query += "RETURN p"
-        return tx.run(query, name=name, age=age, parent_name=parent_name).single()
+        tx.run(query, from_name=from_name, to_name=to_name, RELATIONSHIP_TYPE=relationship_type)
+
+    # @staticmethod
+    # def _create_family_member(tx, properties):
+    #     query = (
+    #         "CREATE (p:Person $properties) "
+    #     )
+    #     if parent_name:
+    #         query += (
+    #             "WITH p "
+    #             "MATCH (parent:Person {name: $parent_name}) "
+    #             "CREATE (parent)-[:HAS_CHILD]->(p) "
+    #         )
+    #     query += "RETURN p"
+    #     return tx.run(query, properties).single()
 
     def get_family_tree(self, person_name: str):
         with self._driver.session() as session:
@@ -111,7 +125,7 @@ class Neo4jCRUD:
             )
             record = result.single()
             if record:
-                parent = models.Person(name=record['parent_name'], gender='unknown')  # You may adjust this based on your data model
+                parent = models.Person(name=record['parent_name'], gender='unknown')
                 children = [models.Person(name=name, gender='unknown') for name in record['children']]
                 return models.FamilyTree(root=parent, children=children)
             else:

@@ -15,3 +15,8 @@ class Person(Profile):
 class FamilyTree(BaseModel):
     root: Person
     fammily: list[Person]
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

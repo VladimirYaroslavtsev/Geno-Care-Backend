@@ -1,6 +1,8 @@
 FROM python:3.10-alpine AS compile-image
 
-RUN apk --no-cache add gcc musl-dev python3-dev g++
+RUN apk --no-cache --virtual add \
+    gcc musl-dev libc-dev python3-dev g++ \
+    && apk --no-cache add libffi-dev
 RUN pip install --upgrade pip
 
 COPY ./requirements.txt /code/requirements.txt

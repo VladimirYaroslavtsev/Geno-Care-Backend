@@ -14,14 +14,12 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    <title>WebSocket Chat</title>
+    <title>Health App</title>
 </head>
 <body>
-    <!-- size="100" -->
     <input type="text" id="messageInput" placeholder="Type a message..." style='width: 700px; height: 100px'>
     <button onclick="sendMessage()">Send</button>
-    <p>Have any of your immediate family members, like parents or siblings, been diagnosed with any chronic diseases or conditions?
-    </p>
+    <button onclick="closeConnection()">Close Connection</button>
     <ul id="chatMessages"></ul>
 
     <script>
@@ -39,6 +37,10 @@
             const message = messageInput.value;
             socket.send(message);
             messageInput.value = "";
+        }
+
+        function closeConnection() {
+            socket.close();
         }
     </script>
 </body>

@@ -18,14 +18,10 @@ async def generate_description(messages: list):
 
     all_content = ''
 
-    # print(stream)
-
     async for chunk in stream:
-        # print(chunk.choices)
         content = chunk.choices[0].delta.content
 
         if content:
-            # print(content)
             all_content += content
         else:
             yield all_content

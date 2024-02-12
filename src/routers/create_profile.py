@@ -10,7 +10,7 @@ import json
 router = APIRouter(tags=['create_profile'])
 
 
-@router.post('/create_profile')
+@router.post('/v1/create_profile')
 async def create_profile(
     profile: models.Profile,
     tree_db: db.Neo4jCRUD = Depends(dependency.get_database_connection)

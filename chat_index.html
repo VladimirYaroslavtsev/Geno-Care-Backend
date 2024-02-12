@@ -17,9 +17,9 @@
     <title>WebSocket Chat</title>
 </head>
 <body>
-    <!-- size="100" -->
     <input type="text" id="messageInput" placeholder="Type a message..." style='width: 700px; height: 100px'>
     <button onclick="sendMessage()">Send</button>
+    <button onclick="closeConnection()">Close Connection</button>
     <ul id="chatMessages"></ul>
 
     <script>
@@ -37,6 +37,10 @@
             const message = messageInput.value;
             socket.send(message);
             messageInput.value = "";
+        }
+
+        function closeConnection() {
+            socket.close();
         }
     </script>
 </body>
