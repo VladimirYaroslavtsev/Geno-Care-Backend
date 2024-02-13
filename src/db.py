@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 from fastapi.exceptions import HTTPException
 from neo4j import GraphDatabase
 import models
@@ -81,7 +81,7 @@ class Neo4jCRUD:
             )
             return result.single()['family_member']
 
-    def get_family_tree(self, node_id: int):
+    def get_family_tree(self, node_id: int) -> List[Dict[str, Any]]:
         with self._driver.session() as session:
             query = '''
             MATCH (n)-[]-(connected_node)
