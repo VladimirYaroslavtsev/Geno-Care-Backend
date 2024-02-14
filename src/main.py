@@ -1,7 +1,7 @@
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, StreamingResponse, FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 import jwt
 import requests
@@ -10,7 +10,6 @@ from routers import (
     create_profile, family_tree, recomendation, research
 )
 import settings as st
-import utils as ut
 
 
 app = FastAPI(debug=True, version=st.VERSION)
@@ -35,10 +34,10 @@ async def web_app() -> HTMLResponse:
 
 @app.get('/healthcheck')
 def healthcheck():
-    return {
+    return JSONResponse(content={
         'status': 'ok',
         'version': st.VERSION
-    }
+    })
 
 
 @app.get('/login/callback')
